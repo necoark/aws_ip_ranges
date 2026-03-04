@@ -2,18 +2,11 @@
 using AWS.Models;
 
 const string url = "https://ip-ranges.amazonaws.com/ip-ranges.json";
-const string downloadedFileName = "downloaded_raw.json";
 const string ipsFileName = "aws_ip_ranges.json";
 
-using (var client = new HttpClient())
-{
-    await using var s = await client.GetStreamAsync(url);
-    await using var fs = new FileStream(downloadedFileName, FileMode.Create);
-    await s.CopyToAsync(fs);
-}
-
-var jsonContent = File.ReadAllText(downloadedFileName);
-var res = JsonSerializer.Deserialize<IpRanges>(jsonContent);
+using var client = new HttpClient();
+await using var stream = await client.GetStreamAsync(url);
+var res = await JsonSerializer.DeserializeAsync<IpRanges>(stream);
 
 var it = 0;
 var antiDuplicateList = new List<string>();
