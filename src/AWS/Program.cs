@@ -2,7 +2,7 @@
 using AWS.Models;
 
 const string url = "https://ip-ranges.amazonaws.com/ip-ranges.json";
-const string ipsFileName = "aws_ip_ranges.json";
+const string ipsFileName = "aws_ip_ranges.txt";
 
 try
 {
