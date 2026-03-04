@@ -8,18 +8,15 @@ using var client = new HttpClient();
 await using var stream = await client.GetStreamAsync(url);
 var res = await JsonSerializer.DeserializeAsync<IpRanges>(stream);
 
-var it = 0;
-var antiDuplicateList = new List<string>();
+var seen = new HashSet<string>();
 if (res?.Prefixes != null)
 {
     await using var writer = new StreamWriter(ipsFileName);
     foreach (var prefix in res.Prefixes)
     {
-        if (!antiDuplicateList.Contains(prefix.IpPrefix))
+        if (seen.Add(prefix.IpPrefix))
         {
             writer.WriteLine(prefix.IpPrefix);
-            antiDuplicateList.Add(prefix.IpPrefix);
-            it++;
         }
     }
 }
@@ -28,4 +25,4 @@ else
     Console.WriteLine("Failed to deserialize prefixes");
 }
 
-Console.WriteLine($"Work done, parsed and converted {it} ip ranges to {ipsFileName} file");
+Console.WriteLine($"Work done, parsed and converted {seen.Count} ip ranges to {ipsFileName} file");
